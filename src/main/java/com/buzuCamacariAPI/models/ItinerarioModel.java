@@ -14,19 +14,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class ItinerarioModel implements Serializable {
 
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "itinerario_generator")
-	@SequenceGenerator(name = "itinerario_generator", sequenceName = "public.tb_itinerario_seq", allocationSize = 1)
+	@SequenceGenerator(name = "itinerarioHorario_generator", sequenceName = "public.tb_itinerarioHorario_seq", allocationSize = 1)
 	Integer id;
 	
 	String itinerario;
 	
-	String pontoInicial;
+	String pontoDeSaidaProCentro;
 	
-	String pontoFinal;
+	String pontoDeSaidaProDestino;
 
 	public Integer getId() {
 		return id;
@@ -44,19 +43,19 @@ public class ItinerarioModel implements Serializable {
 		this.itinerario = itinerario;
 	}
 
-	public String getPontoInicial() {
-		return pontoInicial;
+	public String getPontoDeSaidaProCentro() {
+		return pontoDeSaidaProCentro;
 	}
 
-	public void setPontoInicial(String pontoInicial) {
-		this.pontoInicial = pontoInicial;
+	public void setPontoDeSaidaProCentro(String pontoDeSaidaProCentro) {
+		this.pontoDeSaidaProCentro = pontoDeSaidaProCentro;
 	}
 
-	public String getPontoFinal() {
-		return pontoFinal;
+	public String getPontoDeSaidaProDestino() {
+		return pontoDeSaidaProDestino;
 	}
 
-	public void setPontoFinal(String pontoFinal) {
-		this.pontoFinal = pontoFinal;
+	public void setPontoDeSaidaProDestino(String pontoDeSaidaProDestino) {
+		this.pontoDeSaidaProDestino = pontoDeSaidaProDestino;
 	}
 }

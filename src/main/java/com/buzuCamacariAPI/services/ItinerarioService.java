@@ -17,7 +17,7 @@ public class ItinerarioService {
 	
 	@Transactional(readOnly = true)
 	public List<ItinerarioModel> getAllItinerarios() { 				
-		return repository.findAll();
+		return repository.findAllByOrderByItinerarioAsc();
 	}
 	
 	@Transactional

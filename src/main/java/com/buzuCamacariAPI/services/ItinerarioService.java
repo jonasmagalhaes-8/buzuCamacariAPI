@@ -2,51 +2,69 @@ package com.buzuCamacariAPI.services;
 
 import java.util.List;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.buzuCamacariAPI.models.ItinerarioModel;
 import com.buzuCamacariAPI.repositories.ItinerarioRepository;
-import com.buzuCamacariAPI.responseVOs.ResponseInsertUpdateVO;
 
 @Service
 public class ItinerarioService {
+		
+	private final ItinerarioRepository repository;
+			
+	public ItinerarioService(ItinerarioRepository repository) {
+		this.repository = repository;
+	}
+	 
+	public List<ItinerarioModel> listaItinerariosAtual = null;
 	
-	@Autowired
-	private ItinerarioRepository repository;
+	private void atualizaListaIntinerarios() {
+		listaItinerariosAtual = repository.findAllByOrderByItinerarioAsc();
+	}
 	
 	@Transactional(readOnly = true)
-	public List<ItinerarioModel> getAllItinerarios() { 				
-		return repository.findAllByOrderByItinerarioAsc();
+	public List<ItinerarioModel> getAllItinerarios() { 		
+		if(listaItinerariosAtual==null) atualizaListaIntinerarios();
+		return listaItinerariosAtual;
 	}
 	
 	@Transactional
-	public ResponseInsertUpdateVO insert(ItinerarioModel novoItinerario) {
-				
-		ResponseInsertUpdateVO responseInsertVO = new ResponseInsertUpdateVO();
+	public ResponseEntity<?> insert(ItinerarioModel novoItinerario) {		
+		if(repository.save(novoItinerario)!=null) {
+			atualizaListaIntinerarios();
+			return ResponseEntity.status(HttpStatus.CREATED).body("Cadastro realizado com sucesso!");
+		}
 		
-		if(repository.save(novoItinerario)!=null) responseInsertVO.setSucesso(1);
-		
-		return responseInsertVO;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao cadastrar itinerario!");
 	}
 	
 	@Transactional
-	public ResponseInsertUpdateVO update(ItinerarioModel itinerarioAtualizado) {
+	public ResponseEntity<?> update(ItinerarioModel itinerarioAtualizado) {
 		
 		ItinerarioModel itinerario = repository.getReferenceById(itinerarioAtualizado.getId());
 		
 		BeanUtils.copyProperties(itinerarioAtualizado, itinerario, "id");
 				
 		itinerario = repository.save(itinerario);
-				
-		ResponseInsertUpdateVO responseUpdateVO = new ResponseInsertUpdateVO();
+						
+		if(itinerario!=null) {
+			atualizaListaIntinerarios();
+			ResponseEntity.status(HttpStatus.OK).body("Itinerario atualizado com sucesso!");
+		}
 		
-		if(itinerario!=null) responseUpdateVO.setSucesso(1);
-		
-		return responseUpdateVO;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao atualizar itinerario!");
 	}
 
-	public void delete(int id) {
-		repository.deleteById(id);
+	public ResponseEntity<?> delete(int id) {
+		try {
+			repository.deleteById(id);
+			atualizaListaIntinerarios();
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deletado com sucesso!");
+		}
+		catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID informado invalido!");
+		}
 	}
 }

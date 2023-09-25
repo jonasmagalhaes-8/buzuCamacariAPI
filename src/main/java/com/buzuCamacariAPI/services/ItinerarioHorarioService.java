@@ -1,24 +1,26 @@
 package com.buzuCamacariAPI.services;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.buzuCamacariAPI.dtos.InsertUpdateItinerarioHorarioDTO;
 import com.buzuCamacariAPI.models.ItinerarioHorarioModel;
 import com.buzuCamacariAPI.repositories.ItinerarioHorarioRepository;
-import com.buzuCamacariAPI.responseVOs.ResponseInsertUpdateVO;
 
 @Service
 public class ItinerarioHorarioService {
 	
-	@Autowired
-	private ItinerarioHorarioRepository repository;
+	private final ItinerarioHorarioRepository repository;
 		
+	public ItinerarioHorarioService(ItinerarioHorarioRepository repository) {
+		this.repository = repository;
+	}
+
 	@Transactional
-	public ResponseInsertUpdateVO insert(InsertUpdateItinerarioHorarioDTO novoHorarioItinerario) {
+	public ResponseEntity<?> insert(InsertUpdateItinerarioHorarioDTO novoHorarioItinerario) {
 		
-		ResponseInsertUpdateVO responseInsertVO = new ResponseInsertUpdateVO();
 		ItinerarioHorarioModel itinerarioHorario = new ItinerarioHorarioModel(novoHorarioItinerario);
 		
 		String diasSemana = "";
@@ -29,9 +31,9 @@ public class ItinerarioHorarioService {
 			
 		itinerarioHorario.setDiasSemana(diasSemana.substring(0, diasSemana.length()-1));
 		
-		if(repository.save(itinerarioHorario)!=null) responseInsertVO.setSucesso(1);
+		if(repository.save(itinerarioHorario)!=null) ResponseEntity.status(HttpStatus.CREATED);
 		
-		return responseInsertVO;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao cadastrar horario!");
 	}
 	
 	/*@Transactional

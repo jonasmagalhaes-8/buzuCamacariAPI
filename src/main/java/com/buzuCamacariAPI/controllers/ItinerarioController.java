@@ -1,6 +1,6 @@
 package com.buzuCamacariAPI.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,27 +19,29 @@ import com.buzuCamacariAPI.services.ItinerarioService;
 @RequestMapping(value = "/itinerarios")
 public class ItinerarioController {
 
-	@Autowired
-	private ItinerarioService service;
-				
+	private final ItinerarioService service;
+					
+	public ItinerarioController(ItinerarioService service) {
+		this.service = service;
+	}
+
 	@PostMapping
 	public ResponseEntity<?> insert(@RequestBody ItinerarioModel itinerario) {
-		return ResponseEntity.ok().body(service.insert(itinerario));
+		return service.insert(itinerario);
 	}
 	
 	@PutMapping
 	public ResponseEntity<?> update(@RequestBody ItinerarioModel itinerario) {
-		return ResponseEntity.ok().body(service.update(itinerario));
+		return service.update(itinerario);
 	}
 		
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<?> delete(@PathVariable int id) { 
-		service.delete(id);
-		return ResponseEntity.noContent().build();
+		return service.delete(id);
 	}
 	
 	@GetMapping
-	public ResponseEntity<?> getAllItinerarios() { 
-		return ResponseEntity.ok().body(service.getAllItinerarios());
+	public List<ItinerarioModel> getAllItinerarios() { 
+		return service.getAllItinerarios();
 	}
 }
